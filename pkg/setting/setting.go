@@ -1,19 +1,20 @@
 package setting
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/go-ini/ini"
 )
 
-type Runner struct {
+type App struct {
 	LogSavePath string
 	LogSaveName string
 	LogFileExt  string
 	TimeFormat  string
 }
 
-var RunnerSetting = &Runner{}
+var AppSetting = &App{}
 
 type Database struct {
 	Type        string
@@ -21,6 +22,7 @@ type Database struct {
 	Password    string
 	Host        string
 	Name        string
+	CharSet     string
 	TablePrefix string
 }
 
@@ -35,7 +37,7 @@ func Setup() {
 		log.Fatalf("setting.Setup, fail to parse 'conf/app.ini': %v", err)
 	}
 
-	mapTo("runner", RunnerSetting)
+	mapTo("app", AppSetting)
 	mapTo("database", DatabaseSetting)
 }
 
@@ -44,4 +46,16 @@ func mapTo(section string, v interface{}) {
 	if err != nil {
 		log.Fatalf("Cfg.MapTo %s err: %v", section, err)
 	}
+}
+
+func MakeDBString() (string, string) {
+	// "root:root123@tcp(127.0.0.1:3306)/gobatch?charset=utf8&parseTime=true"
+	dbstring := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&%s",
+		DatabaseSetting.User,
+		DatabaseSetting.Password,
+		DatabaseSetting.Host,
+		DatabaseSetting.Name,
+		DatabaseSetting.CharSet,
+		"parseTime=true")
+	return DatabaseSetting.Type, dbstring
 }

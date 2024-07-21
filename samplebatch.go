@@ -28,7 +28,7 @@ func fetchRemoteResource(url string) ([]byte, error) {
 	return io.ReadAll(r.Body)
 }
 
-func main() {
+func aamain() {
 	if len(os.Args) != 2 {
 		fmt.Fprintf(os.Stdout, "Must specify a HTTP URL to get data from\n")
 		os.Exit(1)
